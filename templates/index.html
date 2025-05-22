@@ -1,0 +1,44 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Growatt Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>Growatt Dashboard</h1>
+    <canvas id="powerChart" width="800" height="400"></canvas>
+    <script>
+        async function fetchData() {
+            const response = await fetch('/data');
+            const data = await response.json();
+            return {
+                labels: data.powerList.map((_, i) => i),
+                values: data.powerList.map(val => parseFloat(val))
+            };
+        }
+
+        async function renderChart() {
+            const { labels, values } = await fetchData();
+            const ctx = document.getElementById('powerChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Leistung (W)',
+                        data: values,
+                        fill: false,
+                        borderColor: 'blue',
+                        tension: 0.1
+                    }]
+                }
+            });
+        }
+
+        renderChart();
+    </script>
+</body>
+</html>
